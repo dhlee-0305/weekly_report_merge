@@ -53,11 +53,7 @@ def loadTop(dst, dayOfWeek):
     paragraphs = dst.rows[1].cells[1].paragraphs
     paragraph = paragraphs[0]
     paragraph.alignment = WD_TABLE_ALIGNMENT.RIGHT
-    run_obj = paragraph.runs
-    run = run_obj[0]
-    font = run.font
-    font.size = Pt(9)
-    font.bold = False
+    setFontSizeBold(paragraphs[0], 9, False)
 
 # 0. 팀 명
 def loadTeamName(src):
@@ -81,7 +77,6 @@ def loadProjectStatus(src, dst):
         row_cells = dst.add_row().cells
         for col in range(col_size):
             row_cells[col].text = src.rows[row+1].cells[col].text
-            
             row_cells[col].vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
             setFontSizeBold(row_cells[col].paragraphs[0], 9, False)
 
@@ -102,14 +97,16 @@ def loadManpowerStatus(src, dst):
     for row in range(1, row_size):
         type_sum = 0
         for col in range(1, col_size):
+            srcCell = src.rows[row].cells[col]
+            dstCell = dst.rows[row].cells[col]
             if col == 1 or col == 2 or col == 4: 
                 # (1)정규직, (2)계약직, (4)증감
-                if(src.rows[row].cells[col].text.isdigit()):
-                    src_man_count = int(src.rows[row].cells[col].text or 0)
+                if(srcCell.text.isdigit()):
+                    src_man_count = int(srcCell.text or 0)
                 else:
                     src_man_count = 0;
-                if(dst.rows[row].cells[col].text.isdigit()):
-                    dst_man_count = int(dst.rows[row].cells[col].text or 0)
+                if(dstCell.text.isdigit()):
+                    dst_man_count = int(dstCell.text or 0)
                 else:
                     dst_man_count = 0;
 
@@ -119,34 +116,34 @@ def loadManpowerStatus(src, dst):
                 if (src_man_count + dst_man_count) > 0:
                     if col == 1:
                         regular_sum = src_man_count + dst_man_count
-                        dst.rows[row].cells[col].text = str(regular_sum)
+                        dstCell.text = str(regular_sum)
                     elif col == 2:
                         contract_sum = src_man_count + dst_man_count
-                        dst.rows[row].cells[col].text = str(contract_sum)
+                        dstCell.text = str(contract_sum)
                     else:
-                        dst.rows[row].cells[col].text = str(src_man_count + dst_man_count)
+                        dstCell.text = str(src_man_count + dst_man_count)
                 else:
-                    dst.rows[row].cells[col].text = ''
+                    dstCell.text = ''
 
             elif col == 3: 
                 # (로우) 합계
-                dst.rows[row].cells[col].text = str(type_sum)
+                dstCell.text = str(type_sum)
             else: 
                 # 증감 사유, 충원 예상 인력 요청
-                if len(dst.rows[row].cells[col].text) > 0 and len(src.rows[row].cells[col].text) > 0:
-                    dst.rows[row].cells[col].text = dst.rows[row].cells[col].text + '\n' + src.rows[row].cells[col].text
-                elif len(dst.rows[row].cells[col].text) == 0 and len(src.rows[row].cells[col].text) > 0:
-                    dst.rows[row].cells[col].text = src.rows[row].cells[col].text
+                if len(dstCell.text) > 0 and len(srcCell.text) > 0:
+                    dstCell.text = dstCell.text + '\n' + srcCell.text
+                elif len(dstCell.text) == 0 and len(srcCell.text) > 0:
+                    dstCell.text = srcCell.text
                 else:
                     pass
-                    #dst.rows[row].cells[col].text = dst.rows[row].cells[col].text
+                    #dstCell.text = dstCell.text
             
-            if len(dst.rows[row].cells[col].text) > 0:
-                dst.rows[row].cells[col].vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
-                if src.rows[row].cells[0].text == '합계':
-                    setFontSizeBold(dst.rows[row].cells[col].paragraphs[0], 9, True)
+            if len(dstCell.text) > 0:
+                dstCell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+                if srcCell.text == '합계':
+                    setFontSizeBold(dstCell.paragraphs[0], 9, True)
                 else:
-                    setFontSizeBold(dst.rows[row].cells[col].paragraphs[0], 9, False)
+                    setFontSizeBold(dstCell.paragraphs[0], 9, False)
 
 
 # 3. 거래처 영업/동향 정보
@@ -173,7 +170,6 @@ def loadClientStatus(src, dst):
                     if len(customerStrIssueStr) > 1:
                         if isTitle :
                             insert_paragraph = row_cells[col].paragraphs[0]
-                            #insert_paragraph = row_cells[col].add_paragraph(s);
                             insert_paragraph.add_run(customerStrIssueStr);
                         else:
                             insert_paragraph = row_cells[col].add_paragraph(' - ' + customerStrIssueStr);
