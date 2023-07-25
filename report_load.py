@@ -7,6 +7,7 @@ from docx.enum.text import WD_LINE_SPACING
 from report_env import *
 from paragraph_style import *
 from logger import *
+from elapsed import *
 
 log = getLogger('report_load')
 
@@ -211,14 +212,12 @@ def loadWork(src, dst, teamName):
                 insert_paragraph = dst.add_paragraph(paragraph.text)
                 insert_paragraph.style = paragraph.style
 
-# doc = Document(r'C:\Downloads\imsi\python\20230622_경영전략회의_SD본부_오픈서비스사업팀.docx')
-# template = Document(TEMPLATE_REPORT_FILE)
+if __name__ == '__main__':
+    doc = Document(r'C:\Downloads\imsi\python\20230622_경영전략회의_SD본부_오픈서비스사업팀.docx')
+    template = Document('C:\Downloads\weekly_report\output\경영전략회의_template.docx')
 
-# loadTop(template.tables[0])
-# loadProjectStatus(doc.tables[1], template.tables[1])
-# loadManpowerStatus(doc.tables[2], template.tables[2])
-# loadClientStatus(doc.tables[3], template.tables[3])
-# loadWork(doc, template, "[오픈서비스사업팀]")
-
-# template.save(getSaveFileName(REFERENCE_DAYOFWEEK))
-
+    loadTop(template.tables[0])
+    loadProjectStatus(doc.tables[1], template.tables[1])
+    loadManpowerStatus(doc.tables[2], template.tables[2])
+    loadClientStatus(doc.tables[3], template.tables[3])
+    loadWork(doc, template, "[오픈서비스사업팀]")
