@@ -1,0 +1,6 @@
+/__pycache__/
+report_merge.spec
+test*.py
+.vscode
+dist
+build
