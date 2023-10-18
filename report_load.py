@@ -58,7 +58,13 @@ def loadTop(dst, dayOfWeek):
 
 # 0. 팀 명
 def loadTeamName(src):
-    teamName = '['+src.rows[0].cells[2].text.replace('SD본부', '').replace('IT서비스부문', '').strip()+']'
+    # printTable(src)
+    if len(src.rows[0].cells) == 3:
+        teamName = '['+src.rows[0].cells[2].text.replace('SD본부', '').replace('IT서비스부문', '').strip()+']'
+    else:
+        teamName = '['+src.rows[1].cells[0].text.replace('SD본부', '').replace('IT서비스부문', '').strip()+']'
+    log.debug('==> topTable row:'+str(len(src.rows))+', col: '+ str(len(src.rows[0].cells))+', teamName:'+teamName)
+
     return teamName
 
 # 1. 프로젝트 진행 현황            
@@ -100,8 +106,9 @@ def loadManpowerStatus(src, dst):
         for col in range(1, col_size):
             srcCell = src.rows[row].cells[col]
             dstCell = dst.rows[row].cells[col]
+            
+            # (1)정규직, (2)계약직, (3) 합계, (4)증감, (5)증감사유, (6)충원 예상 인력 요청
             if col == 1 or col == 2 or col == 4: 
-                # (1)정규직, (2)계약직, (4)증감
                 if(srcCell.text.isdigit()):
                     src_man_count = int(srcCell.text or 0)
                 else:
@@ -111,9 +118,7 @@ def loadManpowerStatus(src, dst):
                 else:
                     dst_man_count = 0;
 
-                # 로우 합계
-                type_sum = type_sum + src_man_count + dst_man_count
-
+                # (1)정규직, (2)계약직
                 if (src_man_count + dst_man_count) > 0:
                     if col == 1:
                         regular_sum = src_man_count + dst_man_count
@@ -121,16 +126,19 @@ def loadManpowerStatus(src, dst):
                     elif col == 2:
                         contract_sum = src_man_count + dst_man_count
                         dstCell.text = str(contract_sum)
-                    else:
+                    else: # (4)증감
                         dstCell.text = str(src_man_count + dst_man_count)
-                else:
+                else:   
                     dstCell.text = ''
 
+                # 로우 합계
+                type_sum = type_sum + src_man_count + dst_man_count
+
             elif col == 3: 
-                # (로우) 합계
+                # (3) 합계 - 로우
                 dstCell.text = str(type_sum)
             else: 
-                # 증감 사유, 충원 예상 인력 요청
+                # (5)증감사유, (6)충원 예상 인력 요청
                 if len(dstCell.text) > 0 and len(srcCell.text) > 0:
                     dstCell.text = dstCell.text + '\n' + srcCell.text
                 elif len(dstCell.text) == 0 and len(srcCell.text) > 0:
@@ -141,7 +149,8 @@ def loadManpowerStatus(src, dst):
             
             if len(dstCell.text) > 0:
                 dstCell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
-                if srcCell.text == '합계':
+                # 합계 로우 값 볼드 처리
+                if row == 5:
                     setFontSizeBold(dstCell.paragraphs[0], 9, True)
                 else:
                     setFontSizeBold(dstCell.paragraphs[0], 9, False)
