@@ -30,7 +30,7 @@ def getLogger(logName):
 
     logFormat = logging.Formatter('%(asctime)s|%(name)s|%(funcName)s|%(levelname)s|%(message)s', datefmt='%Y-%m-%d %H:%M:%S')
     YYYYMMDD = datetime.datetime.now().strftime("%Y%m%d")
-    logFileHandler = logging.FileHandler(config['PATH']['LOG_FILE_PATH']+YYYYMMDD+"_report_merge.log")
+    logFileHandler = logging.FileHandler(config['PATH']['LOG_FILE_PATH']+YYYYMMDD+"_report_merge.log", encoding='utf-8')
     logFileHandler.setFormatter(logFormat)
     log.addHandler(logFileHandler)
 
