@@ -46,6 +46,22 @@ def getBlankRowCount(table):
 
     return blankCount
 
+def sumTwoNumber(v1, v2):
+    """ 2개의 cell 값 합계 리턴
+    :return 2개 값 합, 숫자가 아닌 경우 0
+    """
+    if(v1.text.isdigit()):
+        rv1 = int(v1.text or 0)
+    else:
+        rv1 = 0
+    if(v2.text.isdigit()):
+        rv2 = int(v2.text or 0)
+    else:
+        rv2 = 0
+    
+    return (rv1 + rv2)
+
+
 # 타이틀 영역
 def loadTop(dst, dayOfWeek):
     log.debug('0. 타이틀 영역 처리')
@@ -60,9 +76,9 @@ def loadTop(dst, dayOfWeek):
 def loadTeamName(src):
     # printTable(src)
     if len(src.rows[0].cells) == 3:
-        teamName = '['+src.rows[0].cells[2].text.replace('SD본부', '').replace('IT서비스부문', '').strip()+']'
+        teamName = '['+src.rows[0].cells[2].text.replace('SD본부', '').replace('IT서비스부문', '').replace('(', '').replace(')', '').strip()+']'
     else:
-        teamName = '['+src.rows[1].cells[0].text.replace('SD본부', '').replace('IT서비스부문', '').strip()+']'
+        teamName = '['+src.rows[1].cells[0].text.replace('SD본부', '').replace('IT서비스부문', '').replace('(', '').replace(')', '').strip()+']'
     log.debug('==> topTable row:'+str(len(src.rows))+', col: '+ str(len(src.rows[0].cells))+', teamName:'+teamName)
 
     return teamName
@@ -98,8 +114,6 @@ def loadManpowerStatus(src, dst):
         log.error("loadManpowerStatus 인력 운용 현황 row or column size invalid: "+ str(row_size)+", "+str(col_size))
         exit()
 
-    regular_sum = 0
-    contract_sum = 0
     # 구분(0, 0) 제외
     for row in range(1, row_size):
         type_sum = 0
@@ -107,35 +121,20 @@ def loadManpowerStatus(src, dst):
             srcCell = src.rows[row].cells[col]
             dstCell = dst.rows[row].cells[col]
             
-            # (1)정규직, (2)계약직, (3) 합계, (4)증감, (5)증감사유, (6)충원 예상 인력 요청
+            # column : (1)정규직, (2)계약직, (3) 합계, (4)증감, (5)증감사유, (6)충원 예상 인력 요청
             if col == 1 or col == 2 or col == 4: 
-                if(srcCell.text.isdigit()):
-                    src_man_count = int(srcCell.text or 0)
-                else:
-                    src_man_count = 0;
-                if(dstCell.text.isdigit()):
-                    dst_man_count = int(dstCell.text or 0)
-                else:
-                    dst_man_count = 0;
-
-                # (1)정규직, (2)계약직
-                if (src_man_count + dst_man_count) > 0:
-                    if col == 1:
-                        regular_sum = src_man_count + dst_man_count
-                        dstCell.text = str(regular_sum)
-                    elif col == 2:
-                        contract_sum = src_man_count + dst_man_count
-                        dstCell.text = str(contract_sum)
-                    else: # (4)증감
-                        dstCell.text = str(src_man_count + dst_man_count)
+                # (1)정규직, (2)계약직, (4)증감
+                sumValue = sumTwoNumber(srcCell, dstCell)
+                if sumValue > 0:
+                    if (col == 1) or (col == 2) or (col == 4):
+                        dstCell.text = str(sumValue)
                 else:   
                     dstCell.text = ''
 
-                # 로우 합계
-                type_sum = type_sum + src_man_count + dst_man_count
-
+                # 정규직 + 계약직 합계
+                type_sum = type_sum + sumValue
             elif col == 3: 
-                # (3) 합계 - 로우
+                # (3)합계 - 로우
                 dstCell.text = str(type_sum)
             else: 
                 # (5)증감사유, (6)충원 예상 인력 요청
@@ -180,9 +179,9 @@ def loadClientStatus(src, dst):
                     if len(customerStrIssueStr) > 1:
                         if isTitle :
                             insert_paragraph = row_cells[col].paragraphs[0]
-                            insert_paragraph.add_run(customerStrIssueStr);
+                            insert_paragraph.add_run(customerStrIssueStr)
                         else:
-                            insert_paragraph = row_cells[col].add_paragraph(' - ' + customerStrIssueStr);
+                            insert_paragraph = row_cells[col].add_paragraph(' - ' + customerStrIssueStr)
                         insert_paragraph.alignment = WD_TABLE_ALIGNMENT.LEFT
                         
                         paragraph_format = insert_paragraph.paragraph_format
