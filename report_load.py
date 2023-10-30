@@ -64,7 +64,7 @@ def sumTwoNumber(v1, v2):
 
 # 타이틀 영역
 def loadTop(dst, dayOfWeek):
-    log.debug('0. 타이틀 영역 처리')
+    log.debug('0. 타이틀 영역')
     dst.rows[1].cells[1].text = getReportDate(dayOfWeek)
 
     paragraphs = dst.rows[1].cells[1].paragraphs
@@ -105,8 +105,9 @@ def loadProjectStatus(src, dst):
 
 # 2. 인력 운용 현황
 def loadManpowerStatus(src, dst):
-    log.debug('2. 인력 운용 현황 처리')
+    log.debug('2. 인력 운용 현황')
 
+    dst_row_size = len(dst.rows)
     row_size = len(src.rows)
     col_size = len(src.rows[0].cells)
 
@@ -118,9 +119,21 @@ def loadManpowerStatus(src, dst):
     for row in range(1, row_size):
         type_sum = 0
         for col in range(1, col_size):
+            # 팀 주간 보고 cell
             srcCell = src.rows[row].cells[col]
-            dstCell = dst.rows[row].cells[col]
             
+            # 취합 대상 cell 찾아옴
+            isFindDstCell = False
+            gubun = str(src.rows[row].cells[0].text)
+            for dstRow in range(1, dst_row_size):
+                if dst.rows[dstRow].cells[0].text == gubun :
+                    dstCell = dst.rows[dstRow].cells[col]
+                    isFindDstCell = True
+                    break
+            if isFindDstCell != True:
+                log.error('잘못된 \'구분\'값입니다.(오타 확인) : ['+gubun+"]")
+                exit() 
+
             # column : (1)정규직, (2)계약직, (3) 합계, (4)증감, (5)증감사유, (6)충원 예상 인력 요청
             if col == 1 or col == 2 or col == 4: 
                 # (1)정규직, (2)계약직, (4)증감
@@ -157,7 +170,7 @@ def loadManpowerStatus(src, dst):
 
 # 3. 거래처 영업/동향 정보
 def loadClientStatus(src, dst):
-    log.debug('3. 거래처 영업/동향 정보 처리')
+    log.debug('3. 거래처 영업/동향 정보')
 
     row_size = len(src.rows)
     col_size = len(src.rows[0].cells)
@@ -206,7 +219,7 @@ def loadClientStatus(src, dst):
         
 # 4. 주요 업무 사항
 def loadWork(src, dst, teamName):
-    log.debug('4. 주요 업무 사항 처리')
+    log.debug('4. 주요 업무 사항')
 
     find_work = False
     for i, paragraph in enumerate(src.paragraphs):
