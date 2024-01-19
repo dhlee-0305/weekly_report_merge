@@ -15,6 +15,21 @@ CLIENT_STATUS_COL_SIZE   = 4
 
 dayOfWeekDic = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
 
+# CONFIG_FILE = 'C:\Downloads\weekly_report\output\\report_merge.ini'
+CONFIG_FILE = '.\\report_merge.ini'
+
+
+def checkEnv():
+    config = loadConfig(CONFIG_FILE)
+
+    if not os.path.exists(config['PATH']['REPORT_PATH']):
+        os.makedirs(config['PATH']['REPORT_PATH'])
+    if not os.path.exists(config['PATH']['OUTPUT_PATH']):
+        os.makedirs(config['PATH']['OUTPUT_PATH'])
+    if not os.path.exists(config['PATH']['LOG_FILE_PATH']):
+        os.makedirs(config['PATH']['LOG_FILE_PATH'])
+
+
 def loadConfig(file_path):
     """설정 파일 내용 읽어옴
     :param file_path: 설정파일 전체 경로, 읽은 내용이 없는 경우 현재 디렉토리(./)에서 설정 파일을 찾음
@@ -61,3 +76,8 @@ def getReportDate(dayOfWeek):
         dow = dayOfWeekDic[dayAdded.weekday()]
         if(dayOfWeek == dow):
             return dayAdded.strftime("%Y.%m.%d")+'('+dayOfWeek[0:1]+')'
+
+
+
+if __name__ == '__main__':
+    checkEnv()

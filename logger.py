@@ -4,9 +4,6 @@ from enum import Enum
 
 from report_env import *
 
-#CONFIG_FILE = 'C:\Downloads\weekly_report\output\\report_merge.ini'
-CONFIG_FILE = '.\\report_merge.ini'
-
 class LOG_LEVEL(Enum):
     DEBUG    = logging.DEBUG
     INFO     = logging.INFO
