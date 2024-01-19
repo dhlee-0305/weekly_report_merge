@@ -11,6 +11,9 @@ from elapsed import *
 @elapsed
 def main():
 
+    # 작업 폴더 생성
+    checkEnv()
+
     config = loadConfig(CONFIG_FILE)
     log = getLogger('report_merge')
     log.info("==> Weekly Report Merge Start!")
