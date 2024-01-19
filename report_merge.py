@@ -10,8 +10,6 @@ from elapsed import *
 
 @elapsed
 def main():
-    #CONFIG_FILE = 'C:\Downloads\weekly_report\output\\report_merge.ini'
-    CONFIG_FILE = '.\\report_merge.ini'
 
     config = loadConfig(CONFIG_FILE)
     log = getLogger('report_merge')
