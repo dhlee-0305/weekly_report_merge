@@ -183,7 +183,12 @@ def loadClientStatus(src, dst):
     row_size = row_size - getBlankRowCount(src)
 
     for row in range(row_size-1):
-        row_cells = dst.add_row().cells
+        if (len(src.rows[row+1].cells[2].text) > 3) :
+            row_cells = dst.add_row().cells
+        else:
+            # 공백 행 제외
+            continue
+        
         for col in range(col_size):
             if col == 2: # 주요 정보
                 customerIssueStrArray = src.rows[row+1].cells[col].text.strip().split('\n')
