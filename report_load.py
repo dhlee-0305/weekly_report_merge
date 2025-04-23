@@ -147,7 +147,7 @@ def loadManpowerStatus(src, dst):
                 # 정규직 + 계약직 합계
                 type_sum = type_sum + sumValue
             elif col == 3: 
-                # (3)합계 - 로우
+                # (3)합계 - 컬럼
                 dstCell.text = str(type_sum)
             else: 
                 # (5)증감사유, (6)충원 예상 인력 요청
@@ -161,12 +161,11 @@ def loadManpowerStatus(src, dst):
             
             if len(dstCell.text) > 0:
                 dstCell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
-                # 합계 로우 값 볼드 처리
-                if row == 5:
+                # 합계(마지막) 컬럼만 볼드 처리
+                if row == MANPOWER_STATUS_ROW_SIZE -1:
                     setFontSizeBold(dstCell.paragraphs[0], 9, True)
                 else:
                     setFontSizeBold(dstCell.paragraphs[0], 9, False)
-
 
 # 3. 거래처 영업/동향 정보
 def loadClientStatus(src, dst):
