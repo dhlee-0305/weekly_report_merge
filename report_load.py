@@ -143,7 +143,8 @@ def loadManpowerStatus(src, dst):
                 sumValue = cellToNumber(srcCell) + cellToNumber(dstCell)
                 if sumValue > 0:
                     if (col == 1) or (col == 2) or (col == 4):
-                        dstCell.text = str(sumValue)
+                        if row != MANPOWER_STATUS_ROW_SIZE -1: # 합계 로우는 누락을 위해 셀 업데이트 지연 시킴
+                            dstCell.text = str(sumValue)
                 else:   
                     dstCell.text = ''
 
@@ -164,9 +165,10 @@ def loadManpowerStatus(src, dst):
                     #dstCell.text = dstCell.text
                 
             # 컬럼별 합계 누적
-            if col == 1: regular_sum  += cellToNumber(srcCell)
-            if col == 2: contract_sum += cellToNumber(srcCell)
-            if col == 3: total_sum    += cellToNumber(srcCell)
+            if row != MANPOWER_STATUS_ROW_SIZE -1:
+                if col == 1: regular_sum  += cellToNumber(srcCell)
+                if col == 2: contract_sum += cellToNumber(srcCell)
+                if col == 3: total_sum    += cellToNumber(srcCell)
             
             dstCell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
             
@@ -176,7 +178,7 @@ def loadManpowerStatus(src, dst):
                 if col == 1: dstCell.text = str(cellToNumber(dstCell) + regular_sum)
                 if col == 2: dstCell.text = str(cellToNumber(dstCell) + contract_sum)
                 if col == 3: dstCell.text = str(cellToNumber(dstCell) + total_sum)
-                
+
                 if len(dstCell.text) > 0:
                     setFontSizeBold(dstCell.paragraphs[0], 9, True)
             else:
