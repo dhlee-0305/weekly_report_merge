@@ -7,7 +7,9 @@ from docx.shared import Pt
 :return: None
 """
 def setFontSizeBold(paragraph, fontSize, bold):
-    """폰트의 사이즈와 굵기 설정
+    """
+    폰트의 사이즈와 굵기 설정
+    
     :param fontSize: 폰트 크기(픽셀 단위)
     :param bold: 굵기 여부(True or False)
     :return: None

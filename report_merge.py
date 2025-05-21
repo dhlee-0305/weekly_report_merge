@@ -4,9 +4,14 @@ import os
 from docx import Document
 
 from report_env import *
-from report_load import *
 from logger import *
 from elapsed import *
+
+from report_load import *
+from status_project import *
+from status_manpower import *
+from status_client import *
+from status_work import *
 
 @elapsed
 def main():
@@ -28,10 +33,6 @@ def main():
         log.info("["+str(index+1)+"] 주간보고 파일 : "+report_file_list[index])
         srcDoc = Document(config['PATH']['REPORT_PATH']+report_file_list[index])
             
-        # 0. 상단 탑 영역 : 팀 이름 확인
-        topTable = srcDoc.tables[0]
-        teamName = loadTeamName(topTable)
-
         # 1. 프로젝트 진행 현황
         if config.getboolean('MERGE_SECTION', 'PROJECT_STATUS') :
             projectStatusTable = srcDoc.tables[1]
@@ -49,7 +50,7 @@ def main():
 
         # 4. 주요 업무 사항
         if config.getboolean('MERGE_SECTION', 'WORK_DESCRIPTION'):
-            loadWork(srcDoc, dstDoc, teamName)
+            loadWork(srcDoc, dstDoc)
 
     try:
         reportCreatePath = config['PATH']['OUTPUT_PATH'] + getReportFilePrefix(config['ENV']['REFERENCE_DAYOFWEEK']) + '_IT서비스부문_주간보고.docx'

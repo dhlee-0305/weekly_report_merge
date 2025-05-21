@@ -12,9 +12,11 @@ class LOG_LEVEL(Enum):
     CRITICAL = logging.CRITICAL
 
 def getLogger(logName):
-    """공통 로그 인스턴스를 반환
+    """
+    공통 로그 인스턴스를 생성한다.
+
     :param logName: 로거 이름
-    :return: logging 인스턴스
+    :return: logging: 인스턴스
     """
     config = loadConfig(CONFIG_FILE)
 

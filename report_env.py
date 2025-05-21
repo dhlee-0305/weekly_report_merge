@@ -56,7 +56,9 @@ def getReportList(path):
     return file_list
 
 def getReportFilePrefix(dayOfWeek):
-    """리포트 통합 파일 Prefix(날짜 형식) 문자열 생성
+    """
+    리포트 통합 파일 Prefix(날짜 형식) 문자열 생성
+
     :param dayOfWeek: 요일 ex) 금요일
     :return: YYYYMMDD 형식 문자열
     """
@@ -67,7 +69,9 @@ def getReportFilePrefix(dayOfWeek):
             return dayAdded.strftime("%Y%m%d")
 
 def getReportDate(dayOfWeek):
-    """리포트 통합 파일 내 표시될 기준 날짜 생성
+    """
+    리포트 통합 파일 내 표시될 기준 날짜 생성
+    
     :param dayOfWeek: 요일 ex) 금요일
     :return: YYYY.MM.DD(dayOfWeek) 형식 문자열 ex) 2023.07.07(금요일)
     """
