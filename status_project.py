@@ -21,15 +21,11 @@ def loadProjectStatus(src, dst):
     :return: None
     """    
     log.debug('1. 프로젝트 진행 현황')
-    row_size = len(src.rows)
-    col_size = len(src.rows[0].cells)
+    row_size, col_size = getColRowSize(src)
     
     if col_size != PROJECT_STATUS_COL_SIZE:
         log.error("loadProjectStatus 프로젝트 진행 현황 column size invalid: "+ str(col_size))
         exit()
-
-    # 공백 제거
-    row_size = row_size - getBlankRowCount(src)
 
     for row in range(row_size-1):
         row_cells = dst.add_row().cells

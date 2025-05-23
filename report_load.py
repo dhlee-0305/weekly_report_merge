@@ -103,3 +103,16 @@ def loadTeamName(src):
         teamName = '['+src.rows[1].cells[0].text.replace('SD본부', '').replace('IT서비스부문', '').replace('(', '').replace(')', '').strip()+']'
     return teamName
 
+def getColRowSize(table):
+    """
+    테이블의 row와 column 크기를 가져옴, row 중 모든 column이 공백인 경우는 제외
+
+    :param table: 대상 테이블
+    :return: row, column 크기
+    """
+    row_size = len(table.rows)
+    row_size = row_size - getBlankRowCount(table)
+
+    col_size = len(table.rows[0].cells)
+
+    return row_size, col_size

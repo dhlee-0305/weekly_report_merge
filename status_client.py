@@ -22,15 +22,12 @@ def loadClientStatus(src, dst):
     """    
     log.debug('3. 거래처 영업/동향 정보')
 
-    row_size = len(src.rows)
-    col_size = len(src.rows[0].cells)
+    row_size, col_size = getColRowSize(src)
     
     if col_size != CLIENT_STATUS_COL_SIZE:
         log.error("loadClientStatus 거래처 영업/동향 정보 column size invalid: "+ str(col_size))
         exit()
 
-    # 공백 제거
-    row_size = row_size - getBlankRowCount(src)
 
     for row in range(row_size-1):
         if (len(src.rows[row+1].cells[2].text) > 3) :
@@ -49,25 +46,40 @@ def loadClientStatus(src, dst):
                             insert_paragraph = row_cells[col].paragraphs[0]
                             insert_paragraph.add_run(customerStrIssueStr)
                         else:
-                            insert_paragraph = row_cells[col].add_paragraph(' - ' + customerStrIssueStr)
-                        insert_paragraph.alignment = WD_TABLE_ALIGNMENT.LEFT
+                            if(customerStrIssueStr.startswith('-')):
+                                insert_paragraph = row_cells[col].add_paragraph(' ' + customerStrIssueStr) # 서식 무시하고 '-' 추가한 경우 제외를 위함
+                            else:
+                                insert_paragraph = row_cells[col].add_paragraph(' - ' + customerStrIssueStr)
                         
-                        paragraph_format = insert_paragraph.paragraph_format
-                        paragraph_format.line_spacing = Pt(12)
-                        paragraph_format.space_before = Pt(5)
-                        
-                        run_obj = insert_paragraph.runs
-                        run = run_obj[0]
-                        font = run.font
-                        font.size = Pt(9)
-                        
-                        if isTitle:
-                            font.bold = True
-                            isTitle = False
-                        else:
-                            font.bold = False
+                        setStyleCustomerIssue(insert_paragraph, isTitle)
+                        isTitle = False
+
             else: # (0)구분, (1)고객사/부서, (3)비고
                 row_cells[col].text = src.rows[row+1].cells[col].text
 
                 row_cells[col].vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
                 setFontSizeBold(row_cells[col].paragraphs[0], 9, False)
+
+def setStyleCustomerIssue(insert_paragraph, isTitle):
+    """
+    거래처 영업/동향 정보의 주요 정보 내용 스타일 설정
+    :param insert_paragraph: 단락
+    :param isTitle: 제목 여부
+    :return: 없음
+    """
+    
+    insert_paragraph.alignment = WD_TABLE_ALIGNMENT.LEFT
+    paragraph_format = insert_paragraph.paragraph_format
+    paragraph_format.line_spacing = Pt(12)
+    paragraph_format.space_before = Pt(5)
+    
+    run_obj = insert_paragraph.runs
+    run = run_obj[0]
+    font = run.font
+    font.size = Pt(9)
+
+    if isTitle:
+        font.bold = True
+        isTitle = False
+    else:
+        font.bold = False

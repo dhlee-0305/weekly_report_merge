@@ -23,8 +23,7 @@ def loadManpowerStatus(src, dst):
     log.debug('2. 인력 운용 현황')
 
     dst_row_size = len(dst.rows)
-    read_row_size = len(src.rows)
-    read_col_size = len(src.rows[0].cells)
+    read_row_size, read_col_size = getColRowSize(src)
 
     regular_sum = 0;    # 정규직 합계
     contract_sum = 0;   # 계약직 합계
@@ -36,7 +35,7 @@ def loadManpowerStatus(src, dst):
 
     # 구분(0, 0) 제외
     for row in range(1, read_row_size):
-        type_sum = 0
+        regular_contract_sum = 0
         for col in range(1, read_col_size):
             # 팀 주간 보고 cell
             srcCell = src.rows[row].cells[col]
@@ -48,50 +47,45 @@ def loadManpowerStatus(src, dst):
                 log.error('잘못된 \'구분\'값입니다.(오타 확인) : ['+gubun+"]")
                 exit() 
 
-            # column : (1)정규직, (2)계약직, (3) 합계, (4)증감, (5)증감사유, (6)충원 예상 인력 요청
-            if col == 1 or col == 2 or col == 4: 
-                # (1)정규직, (2)계약직, (4)증감
+            # col : (1)정규직, (2)계약직, (3) 합계, (4)증감, (5)증감사유, (6)충원 예상 인력 요청
+            if col in [1, 2, 4]: # (1)정규직, (2)계약직, (4)증감
                 sumValue = cellToNumber(srcCell) + cellToNumber(dstCell)
                 if sumValue > 0:
-                    if (col == 1) or (col == 2) or (col == 4):
-                        if row != MANPOWER_STATUS_ROW_SIZE -1: # 합계 로우는 누락을 위해 셀 업데이트 지연 시킴
-                            dstCell.text = str(sumValue)
+                    if row != MANPOWER_STATUS_ROW_SIZE -1: # 합계 로우는 누적 계산을 위해 업데이트 하지 않음 => 최종 계산 후 업데이트
+                        dstCell.text = str(sumValue)
                 else:   
                     dstCell.text = ''
 
-                # 정규직 + 계약직 합계
-                type_sum = type_sum + sumValue
+                # (합계 컬럼용) 정규직 + 계약직 합계
+                regular_contract_sum = regular_contract_sum + sumValue
 
-            elif col == 3: 
-                # (3)합계 - 컬럼
-                dstCell.text = str(type_sum)
-            else: 
-                # (5)증감사유, (6)충원 예상 인력 요청
+            elif col == 3: # (3)합계
+                if row != MANPOWER_STATUS_ROW_SIZE -1: # 합계 로우는 누적 계산을 위해 업데이트 하지 않음 => 최종 계산 후 업데이트
+                    dstCell.text = str(regular_contract_sum)
+
+            else: # (5)증감사유, (6)충원 예상 인력 요청
                 if len(dstCell.text) > 0 and len(srcCell.text) > 0:
                     dstCell.text = dstCell.text + '\n' + srcCell.text
                 elif len(dstCell.text) == 0 and len(srcCell.text) > 0:
                     dstCell.text = srcCell.text
-                else:
-                    pass
-                    #dstCell.text = dstCell.text
-                
-            # 컬럼별 합계 누적
-            if row != MANPOWER_STATUS_ROW_SIZE -1:
-                if col == 1: regular_sum  += cellToNumber(srcCell)
-                if col == 2: contract_sum += cellToNumber(srcCell)
-                if col == 3: total_sum    += cellToNumber(srcCell)
-            
+
             dstCell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
             
-            # 합계(마지막) 로우만 볼드 처리
             if row == MANPOWER_STATUS_ROW_SIZE -1:
-                # 컬럽별 합계 누적 업데이트
+                # 합계(마지막) 로우 - 컬럽별 합계 누적 업데이트
                 if col == 1: dstCell.text = str(cellToNumber(dstCell) + regular_sum)
                 if col == 2: dstCell.text = str(cellToNumber(dstCell) + contract_sum)
                 if col == 3: dstCell.text = str(cellToNumber(dstCell) + total_sum)
 
+                # 최종 합계 볼드 처리
                 if len(dstCell.text) > 0:
                     setFontSizeBold(dstCell.paragraphs[0], 9, True)
-            else:
+            else:   
+                # 마지막 로우가 아닌 경우 컬럼별 합계 누적
+                if col == 1: regular_sum  += cellToNumber(srcCell)
+                if col == 2: contract_sum += cellToNumber(srcCell)
+                if col == 3: total_sum    += cellToNumber(srcCell)
+
+                # 최종 합계 외 볼드 미적용
                 if len(dstCell.text) > 0:
                     setFontSizeBold(dstCell.paragraphs[0], 9, False)
