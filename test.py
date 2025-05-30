@@ -2,7 +2,7 @@ import configparser as parser
 import logging
 from enum import Enum
 
-from report_env import *
+from weekly_env import *
 
 print("Hello World")
 

@@ -2,7 +2,7 @@ import logging
 import sys
 from enum import Enum
 
-from report_env import *
+from weekly_env import *
 
 class LOG_LEVEL(Enum):
     DEBUG    = logging.DEBUG
