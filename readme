@@ -17,4 +17,4 @@ pip install python-docx
 pip install pyinstaller
 
 # 실행파일 생성
-pyinstaller --onefile report_merge.py
+pyinstaller --onefile weekly_merge.py
