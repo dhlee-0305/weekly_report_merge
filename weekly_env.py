@@ -15,8 +15,8 @@ CLIENT_STATUS_COL_SIZE   = 4
 
 dayOfWeekDic = ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일']
 
-# CONFIG_FILE = 'C:\Downloads\weekly_report\output\\report_merge.ini'
-CONFIG_FILE = '.\\report_merge.ini'
+# CONFIG_FILE = 'C:\Downloads\weekly_report\output\\weekly_merge.ini'
+CONFIG_FILE = '.\\weekly_merge.ini'
 
 
 def checkEnv():

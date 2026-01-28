@@ -2,14 +2,14 @@
 # 파이썬 설치
 윈도우용 pyton-3.11.7 버전 설치
 
-# 작업 폴더 생성 (report_merge.ini 참고)
+# 작업 폴더 생성 (weekly_merge.ini 참고)
 작업 폴더          C:\Downloads\weekly_report\
 취합 파일 생성 폴더 C:\Downloads\weekly_report\output\
 로그 폴더          C:\Downloads\weekly_report\log\\
 
 # 설정 파일 및 템플릿 복사
 \weekly_report\output\ 폴더에 아래 2개 파일 복사
-report_merge.ini
+weekly_merge.ini
 경영전략회의_template.docx
 
 # 라이브러리 및 실행 파일 생성 모듈 설치 (파이썬 설치 후 진행)
