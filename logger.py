@@ -33,4 +33,9 @@ def getLogger(logName):
     logFileHandler.setFormatter(logFormat)
     log.addHandler(logFileHandler)
 
+    # 콘솔에도 로그 출력
+    consoleHandler = logging.StreamHandler(sys.stdout)
+    consoleHandler.setFormatter(logFormat)
+    log.addHandler(consoleHandler)
+
     return log
