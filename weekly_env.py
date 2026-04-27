@@ -50,10 +50,16 @@ def getWeeklyList(path):
     :param path: 주간보고 파일이 저장된 폴더 경로
     :return: 파일 이름 리스트
     """
-    fileList = [f for f in os.listdir(path) if ((not f.startswith('~$')) and (os.path.isfile(path+f)))] 
-    for file in fileList:
-        if (file.find('.docx') == -1 or file.find('output') > 0):
-            fileList.remove(file)
+    fileList = [
+        f for f in os.listdir(path)
+        if (
+            not f.startswith('~$')
+            and f.lower().endswith('.docx')
+            and 'output' not in f
+            and 'template' not in f
+            and os.path.isfile(os.path.join(path, f))
+        )
+    ]
     return fileList
 
 def getWeeklyFilePrefix(dayOfWeek):
